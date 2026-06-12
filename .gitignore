@@ -31,3 +31,17 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# --- Logs and Temp Files ---
+*.log
+logs/
+
+# --- Sensitive Configuration Files ---
+**/src/main/resources/application-local.properties
+**/src/main/resources/application-local.yml
+**/src/main/resources/application-prod.properties
+**/src/main/resources/application-prod.yml
+
+# --- OS Generated Files ---
+.DS_Store
+Thumbs.db
