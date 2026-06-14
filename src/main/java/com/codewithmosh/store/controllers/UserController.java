@@ -47,4 +47,11 @@ public class UserController {
         return ResponseEntity.ok(userMapper.toDto(user));
     }
 
+    //get data from the request body so we can create the new record
+
+    @PostMapping
+    public UserDto createUser(@RequestBody UserDto userData){
+        return userData;
+    }
+
 }
