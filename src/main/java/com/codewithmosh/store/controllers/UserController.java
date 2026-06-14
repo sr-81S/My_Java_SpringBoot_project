@@ -22,8 +22,10 @@ public class UserController {
 
     @GetMapping// HTTP GET method
     public Iterable<UserDto> getAllUsers(
+//            @RequestHeader(required = false, name = "x-auth-token") String accessToken,
             @RequestParam(required = false, defaultValue = "", name = "sort") String sort
     ){
+//        System.out.println(accessToken);
 
        if(!Set.of("email", "name").contains(sort.toLowerCase())) {
            sort = "name";
