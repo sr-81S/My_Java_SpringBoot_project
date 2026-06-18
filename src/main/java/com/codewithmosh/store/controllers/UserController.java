@@ -1,5 +1,6 @@
 package com.codewithmosh.store.controllers;
 
+import com.codewithmosh.store.dtos.ChangePasswordRequest;
 import com.codewithmosh.store.dtos.RegisterUserRequest;
 import com.codewithmosh.store.dtos.UpdateUserRequest;
 import com.codewithmosh.store.dtos.UserDto;
@@ -72,6 +73,33 @@ public class UserController {
         userMapper.update(request, user);
         userRepository.save(user);
         return ResponseEntity.ok(userMapper.toDto(user));
+    }
+
+    //delete the user with the user id
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
+        var user = userRepository.findById(id).orElse(null);
+        if(user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        userRepository.delete(user);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    //Update the password with the user id
+    @PostMapping("/{id}/change-password")
+    public ResponseEntity<Void> updateUserPassword(@PathVariable(name="id") Long id, @RequestBody ChangePasswordRequest request){
+        var user = userRepository.findById(id).orElse(null);
+        if(user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if(!user.getPassword().equals(request.getOldPassword())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        user.setPassword(request.getNewPassword());
+        userRepository.save(user);
+        return ResponseEntity.noContent().build();
     }
 
 }
