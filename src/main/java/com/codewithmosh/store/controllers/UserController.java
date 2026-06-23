@@ -58,7 +58,12 @@ public class UserController {
     //get data from the request body so we can create the new record
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody RegisterUserRequest request, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserRequest request, UriComponentsBuilder uriBuilder) {
+        if(userRepository.existsByEmail(request.getEmail())) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("email", "Email already exists")
+            );
+        }
         var user = userMapper.toEntity(request);
         System.out.println(user);
         userRepository.save(user);
