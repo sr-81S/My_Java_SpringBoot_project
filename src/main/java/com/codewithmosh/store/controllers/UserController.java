@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @AllArgsConstructor
 @RequestMapping("/users")
