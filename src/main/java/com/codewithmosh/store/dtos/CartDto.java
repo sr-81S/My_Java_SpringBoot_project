@@ -10,9 +10,7 @@ import java.util.UUID;
 @Data
 public class CartDto {
     private UUID id;
-
     private List<CartItemDto> item = new ArrayList<>();
-
     private BigDecimal totalPrice = BigDecimal.ZERO;
 
 }

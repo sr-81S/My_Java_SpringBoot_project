@@ -46,6 +46,7 @@ public class UserController {
                 .toList();
     }
 
+    //get one user by id
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> findById(@PathVariable Long id){
         var user = userRepository.findById(id).orElse(null);

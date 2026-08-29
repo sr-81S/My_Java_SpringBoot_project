@@ -68,7 +68,10 @@ public class ProductController {
      //Update the product
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(
-            @PathVariable(name ="id") Long id, @RequestBody ProductDto productDto) {
+            @PathVariable(name ="id") Long id,
+            @RequestBody ProductDto productDto) {
+
+
         var category = categoryRepository.findById(productDto.getCategoryId()).orElse(null);
         if(category == null) {
             return ResponseEntity.notFound().build();
@@ -83,6 +86,8 @@ public class ProductController {
         product.setCategory(category);
         var updatedProduct = productRepository.save(product);
         return ResponseEntity.ok(productMapper.toDto(updatedProduct));
+
+
     }
 
      //Delete the product
