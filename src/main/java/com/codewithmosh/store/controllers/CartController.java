@@ -124,4 +124,20 @@ public class CartController {
         return ResponseEntity.noContent().build();
     }
 
+
+    //clear the cart
+
+    @DeleteMapping("/{cartId}")
+    public ResponseEntity<?> clearCart(@PathVariable UUID cartId){
+        var cart = cartRepository.getCartsWithItems(cartId).orElse(null);
+        if (cart == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    Map.of("error", "Cart not found")
+            );
+        }
+        cart.clearItem();
+        cartRepository.save(cart);
+        return ResponseEntity.noContent().build();
+    }
+
 }
