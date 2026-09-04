@@ -39,7 +39,13 @@ public class AuthController {
 
     }
 
+//controller for validateing the token
 
+    @PostMapping("/validate")
+    public Boolean validateToken(@RequestHeader("Authorization") String AuthHeader) {
+        String token = AuthHeader.replace("Bearer ", "");
+        return jwtServices.validateToken(token);
+    }
 
     //handel bad request exceptions
     @ExceptionHandler(BadCredentialsException.class)
