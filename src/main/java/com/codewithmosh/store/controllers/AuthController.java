@@ -3,6 +3,9 @@ package com.codewithmosh.store.controllers;
 import com.codewithmosh.store.dtos.JwtResponse;
 import com.codewithmosh.store.dtos.LoginRequest;
 
+import com.codewithmosh.store.dtos.UserDto;
+import com.codewithmosh.store.mappers.UserMapper;
+import com.codewithmosh.store.repositories.UserRepository;
 import com.codewithmosh.store.services.JwtServices;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -13,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,6 +26,8 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtServices jwtServices;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -45,6 +51,23 @@ public class AuthController {
     public Boolean validateToken(@RequestHeader("Authorization") String AuthHeader) {
         String token = AuthHeader.replace("Bearer ", "");
         return jwtServices.validateToken(token);
+    }
+
+
+    //get the current user conttext by AIP
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getCuurentContex(){
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var email = (String) authentication.getPrincipal();
+
+        var user = userRepository.findByEmail(email).orElse(null);
+        if(user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(userMapper.toDto(user));
+
     }
 
     //handel bad request exceptions
