@@ -39,7 +39,9 @@ public class AuthController {
                 )
         );
 
-        var token = jwtServices.generateToken(request.getEmail());
+        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+
+        var token = jwtServices.generateToken(user);
 
         return ResponseEntity.ok(new JwtResponse(token));
 
@@ -57,11 +59,11 @@ public class AuthController {
     //get the current user conttext by AIP
 
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getCuurentContex(){
+    public ResponseEntity<UserDto> getCurrentContext(){
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        var email = (String) authentication.getPrincipal();
+        var userId = (Long) authentication.getPrincipal();
 
-        var user = userRepository.findByEmail(email).orElse(null);
+        var user = userRepository.findById(userId).orElse(null);
         if(user == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

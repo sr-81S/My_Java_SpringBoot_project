@@ -1,9 +1,9 @@
 package com.codewithmosh.store.services;
 
+import com.codewithmosh.store.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,11 +17,13 @@ public class JwtServices {
     private String secret;
 
     //method for generating token with the email
-    public String generateToken(String email) {
+    public String generateToken(User user) {
 
         final long tokenExpiration = 86400;
         return Jwts.builder()
-                .subject(email)
+                .subject(user.getId().toString())
+                .claim("userName", user.getName())
+                .claim("email", user.getEmail())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + tokenExpiration * 1000)) // 10 hours
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
@@ -49,10 +51,10 @@ public class JwtServices {
                 .getPayload();
     }
 
-    //Function for get email from token
-    public String getEmailFromToken(String token) {
+    //Function for get user ID from token
+    public Long getUserIdFromToken(String token) {
         var claims = getClaims(token);
 
-        return claims.getSubject();
+        return Long.valueOf(claims.getSubject());
     }
 }
