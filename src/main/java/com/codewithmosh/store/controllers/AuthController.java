@@ -7,6 +7,8 @@ import com.codewithmosh.store.dtos.UserDto;
 import com.codewithmosh.store.mappers.UserMapper;
 import com.codewithmosh.store.repositories.UserRepository;
 import com.codewithmosh.store.services.JwtServices;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
@@ -30,7 +32,9 @@ public class AuthController {
     private final UserMapper userMapper;
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<JwtResponse> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletResponse response) {
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -41,9 +45,16 @@ public class AuthController {
 
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
 
-        var token = jwtServices.generateToken(user);
+        var accessToken = jwtServices.generateAccessToken(user);
+        var refreshToken = jwtServices.generateRefreshToken(user);
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        var httpCookie = new Cookie("refreshToken", refreshToken);
+        httpCookie.setHttpOnly(true);
+        httpCookie.setPath("/auth/");
+        httpCookie.setMaxAge(7 * 24 * 60 * 60);// 7 days in seconds
+        response.addCookie(httpCookie);
+
+        return ResponseEntity.ok(new JwtResponse(accessToken));
 
     }
 
