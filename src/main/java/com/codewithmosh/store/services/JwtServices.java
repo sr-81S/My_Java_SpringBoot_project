@@ -1,5 +1,6 @@
 package com.codewithmosh.store.services;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -32,15 +33,26 @@ public class JwtServices {
     //method for validate toke
     public Boolean validateToken(String token) {
         try {
-           var claims = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
-                    .build()
-                    .parseSignedClaims(token)
-                   .getPayload();
+            var claims = getClaims(token);
 
             return claims.getExpiration().after(new Date());
         } catch (JwtException e) {
             return false;
         }
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                 .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                 .build()
+                 .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    //Function for get email from token
+    public String getEmailFromToken(String token) {
+        var claims = getClaims(token);
+
+        return claims.getSubject();
     }
 }
