@@ -1,5 +1,6 @@
 package com.codewithmosh.store.controllers;
 
+import com.codewithmosh.store.config.JwtConfig;
 import com.codewithmosh.store.dtos.JwtResponse;
 import com.codewithmosh.store.dtos.LoginRequest;
 
@@ -30,6 +31,7 @@ public class AuthController {
     private final JwtServices jwtServices;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final JwtConfig jwtConfig;
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(
@@ -51,7 +53,7 @@ public class AuthController {
         var httpCookie = new Cookie("refreshToken", refreshToken);
         httpCookie.setHttpOnly(true);
         httpCookie.setPath("/auth/");
-        httpCookie.setMaxAge(7 * 24 * 60 * 60);// 7 days in seconds
+        httpCookie.setMaxAge((int) jwtConfig.getRefreshTokenExpirationMs()); // 7 days in seconds
         response.addCookie(httpCookie);
 
         return ResponseEntity.ok(new JwtResponse(accessToken));
