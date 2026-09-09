@@ -20,12 +20,14 @@ public class JwtServices {
 
     //method for generating  access token with the email
     public String generateAccessToken(User user) {
-        return getToken(user, jwtConfig.getAccessTokenExpirationMs());
+        //System.out.println("Access Token Expiration: " + jwtConfig.getAccessTokenExpiration());
+        return getToken(user, jwtConfig.getAccessTokenExpiration());
     }
 
     //method for generating refresh token with the email
     public String generateRefreshToken(User user) {
-        return getToken(user, jwtConfig.getRefreshTokenExpirationMs());
+        //System.out.println("Refresh Token Expiration: " + jwtConfig.getRefreshTokenExpiration());
+        return getToken(user, jwtConfig.getRefreshTokenExpiration());
     }
 
     private String getToken(User user, long tokenExpiration) {

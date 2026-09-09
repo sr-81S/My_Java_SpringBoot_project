@@ -53,7 +53,7 @@ public class AuthController {
         var httpCookie = new Cookie("refreshToken", refreshToken);
         httpCookie.setHttpOnly(true);
         httpCookie.setPath("/auth/");
-        httpCookie.setMaxAge((int) jwtConfig.getRefreshTokenExpirationMs()); // 7 days in seconds
+        httpCookie.setMaxAge((int) jwtConfig.getRefreshTokenExpiration()); // 7 days in seconds
         response.addCookie(httpCookie);
 
         return ResponseEntity.ok(new JwtResponse(accessToken));
@@ -62,17 +62,30 @@ public class AuthController {
 
 //controller for validateing the token
 
-    @PostMapping("/validate")
-    public Boolean validateToken(@RequestHeader("Authorization") String AuthHeader) {
-        String token = AuthHeader.replace("Bearer ", "");
-        return jwtServices.validateToken(token);
-    }
+//    @PostMapping("/validate")
+//    public Boolean validateToken(@RequestHeader("Authorization") String AuthHeader) {
+//        String token = AuthHeader.replace("Bearer ", "");
+//        return jwtServices.validateToken(token);
+//    }
 
+    //controller for refresh the access token
+
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtResponse> refresh(@CookieValue("refreshToken") String refreshToken) {
+        if (!jwtServices.validateToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        var userId = jwtServices.getUserIdFromToken(refreshToken);
+        var user = userRepository.findById(userId).orElseThrow();
+        var newAccessToken = jwtServices.generateAccessToken(user);
+        return ResponseEntity.ok(new JwtResponse(newAccessToken));
+    }
 
     //get the current user conttext by AIP
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> getCurrentContext(){
+        System.out.println("check");
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var userId = (Long) authentication.getPrincipal();
 
