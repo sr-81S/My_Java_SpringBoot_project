@@ -35,6 +35,7 @@ public class JwtServices {
                 .subject(user.getId().toString())
                 .claim("userName", user.getName())
                 .claim("email", user.getEmail())
+                .claim("Role", user.getRole())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + tokenExpiration * 1000)) // 5 minutes
                 .signWith(jwtConfig.getSecretKey())
