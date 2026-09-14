@@ -1,6 +1,7 @@
 package com.codewithmosh.store.services;
 
 import com.codewithmosh.store.config.JwtConfig;
+import com.codewithmosh.store.entities.Role;
 import com.codewithmosh.store.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -67,5 +68,11 @@ public class JwtServices {
         var claims = getClaims(token);
 
         return Long.valueOf(claims.getSubject());
+    }
+
+    //Get roles from the token
+    public String getRoleFromToken(String token) {
+        var claims = getClaims(token);
+        return claims.get("Role", String.class);
     }
 }
