@@ -1,14 +1,11 @@
 package com.codewithmosh.store.services;
 
 import com.codewithmosh.store.config.JwtConfig;
-import com.codewithmosh.store.entities.Role;
 import com.codewithmosh.store.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -20,38 +17,49 @@ public class JwtServices {
    private final JwtConfig jwtConfig;
 
     //method for generating  access token with the email
-    public String generateAccessToken(User user) {
+    public Jwt generateAccessToken(User user) {
         //System.out.println("Access Token Expiration: " + jwtConfig.getAccessTokenExpiration());
         return getToken(user, jwtConfig.getAccessTokenExpiration());
     }
 
     //method for generating refresh token with the email
-    public String generateRefreshToken(User user) {
+    public Jwt generateRefreshToken(User user) {
         //System.out.println("Refresh Token Expiration: " + jwtConfig.getRefreshTokenExpiration());
         return getToken(user, jwtConfig.getRefreshTokenExpiration());
     }
 
-    private String getToken(User user, long tokenExpiration) {
-        return Jwts.builder()
+    private Jwt getToken(User user, long tokenExpiration) {
+       var claims =  Jwts.claims()
                 .subject(user.getId().toString())
-                .claim("userName", user.getName())
-                .claim("email", user.getEmail())
-                .claim("Role", user.getRole())
+                .add("email", user.getEmail())
+                .add("role", user.getRole())
+                .add("userName", user.getName())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + tokenExpiration * 1000)) // 5 minutes
-                .signWith(jwtConfig.getSecretKey())
-                .compact();
+            .expiration(new Date(System.currentTimeMillis() + tokenExpiration * 1000))
+                .build(); //
+
+        return new Jwt(claims, jwtConfig.getSecretKey());
     }
 
 
     //method for validate toke
-    public Boolean validateToken(String token) {
+//    public Boolean validateToken(String token) {
+//        try {
+//            var claims = getClaims(token);
+//
+//            return claims.getExpiration().after(new Date());
+//        } catch (JwtException e) {
+//            return false;
+//        }
+//    }
+
+
+    public Jwt parseToken(String token) {
         try {
             var claims = getClaims(token);
-
-            return claims.getExpiration().after(new Date());
+            return new Jwt(claims, jwtConfig.getSecretKey());
         } catch (JwtException e) {
-            return false;
+            return null;
         }
     }
 
@@ -64,15 +72,15 @@ public class JwtServices {
     }
 
     //Function for get user ID from token
-    public Long getUserIdFromToken(String token) {
-        var claims = getClaims(token);
-
-        return Long.valueOf(claims.getSubject());
-    }
+//    public Long getUserIdFromToken(String token) {
+//        var claims = getClaims(token);
+//
+//        return Long.valueOf(claims.getSubject());
+//    }
 
     //Get roles from the token
-    public String getRoleFromToken(String token) {
-        var claims = getClaims(token);
-        return claims.get("Role", String.class);
-    }
+//    public String getRoleFromToken(String token) {
+//        var claims = getClaims(token);
+//        return claims.get("Role", String.class);
+//    }
 }
