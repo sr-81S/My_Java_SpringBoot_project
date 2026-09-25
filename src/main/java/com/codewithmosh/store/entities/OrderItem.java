@@ -2,7 +2,9 @@ package com.codewithmosh.store.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -11,6 +13,7 @@ import java.math.BigDecimal;
 @Setter
 @Entity
 @Table(name = "order_items")
+@NoArgsConstructor
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,4 +42,12 @@ public class OrderItem {
     @Column(name = "total_price")
     private BigDecimal totalPrice;
 
+
+    public OrderItem(Order order, Product product, Integer quantity) {
+        this.order = order;
+        this.product = product;
+        this.quantity = quantity;
+        this.unitPrice = product.getPrice();
+        this.totalPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+    }
 }
