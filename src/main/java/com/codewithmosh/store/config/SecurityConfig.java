@@ -65,6 +65,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(c->c
                         //c.anyRequest().permitAll() //on this line all API is accessable
                         .requestMatchers("/carts/**").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .requestMatchers("/admin/**").hasRole(String.valueOf(Role.ADMIN.name()))
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
