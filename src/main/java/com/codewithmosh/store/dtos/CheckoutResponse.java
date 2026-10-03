@@ -8,6 +8,6 @@ import lombok.Data;
 public class CheckoutResponse {
 
     private Long orderId;
-
+    private String Url;
 
 }
